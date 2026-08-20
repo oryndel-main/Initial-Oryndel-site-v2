@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { Resend } from "resend";
 
 // --- Server-only clients -----------------------------------------------
 // SUPABASE_SERVICE_ROLE_KEY and Upstash credentials are read from
@@ -13,6 +14,7 @@ const supabase =
   process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
     ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
         auth: { persistSession: false },
+      const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
       })
     : null;
 
@@ -98,4 +100,20 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true });
+  if (resend && process.env.NOTIFY_EMAIL) {
+  try {
+    await resend.emails.send({
+      from: "Oryndel Site <onboarding@resend.dev>",
+      to: process.env.NOTIFY_EMAIL,
+      subject: `New demo request — ${record.business_name}`,
+      text: [
+        `Business: ${record.business_name}`,
+        `Trade: ${record.trade}`,
+        `Phone: ${record.phone}`,
+        `Submitted: ${record.created_at}`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    console.error("Resend notification failed:", err);
+  }
 }
