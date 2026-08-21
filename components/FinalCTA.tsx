@@ -15,14 +15,15 @@ export default function FinalCTA() {
     setLoading(true);
 
     const form = new FormData(e.currentTarget);
-    const payload = {
-      business: form.get("business"),
-      trade: form.get("trade"),
-      phone: form.get("phone"),
-      // Honeypot: real visitors never see or fill this field (see CSS
-      // below). If it's non-empty, the request came from a bot.
-      website: form.get("website"),
-    };
+const countryValue = form.get("country");
+const payload = {
+  business: form.get("business"),
+  trade: form.get("trade"),
+  country: countryValue === "other" ? form.get("countryOther") : countryValue,
+  email: form.get("email"),
+  phone: form.get("phone"),
+  website: form.get("website"),
+};
 
     try {
       const res = await fetch("/api/demo-request", {
