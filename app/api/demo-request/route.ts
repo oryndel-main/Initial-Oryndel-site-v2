@@ -26,6 +26,7 @@ const ratelimit =
 
 const TRADE_VALUES = new Set(["septic", "porta-potty", "dumpster", "multiple"]);
 const PHONE_RE = /^[0-9+()\-.\s]{7,20}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
   if (ratelimit) {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const { business, trade, phone, website } = body as Record<string, unknown>;
+  const { business, trade, country, email, phone, website } = body as Record<string, unknown>;
 
   if (typeof website === "string" && website.trim() !== "") {
     return NextResponse.json({ ok: true });
@@ -55,17 +56,22 @@ export async function POST(req: NextRequest) {
   if (typeof trade !== "string" || !TRADE_VALUES.has(trade)) {
     return NextResponse.json({ error: "Select a valid trade." }, { status: 400 });
   }
-  if (typeof phone !== "string" || !PHONE_RE.test(phone.trim())) {
-    return NextResponse.json({ error: "Enter a valid phone number." }, { status: 400 });
-  }
+  if (typeof country !== "string" || country.trim().length < 2 || country.length > 100) {
+  return NextResponse.json({ error: "Enter a valid country." }, { status: 400 });
+}
+if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
+  return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+}
 
   const record = {
-    business_name: business.trim(),
-    trade,
-    phone: phone.trim(),
-    source: "site_final_cta",
-    created_at: new Date().toISOString(),
-  };
+  business_name: business.trim(),
+  trade,
+  country: country.trim(),
+  email: email.trim(),
+  phone: phone.trim(),
+  source: "site_final_cta",
+  created_at: new Date().toISOString(),
+};
 
   if (supabase) {
     const { error } = await supabase.from("demo_requests").insert(record);
@@ -84,11 +90,14 @@ export async function POST(req: NextRequest) {
         to: process.env.NOTIFY_EMAIL,
         subject: `New demo request — ${record.business_name}`,
         text: [
-          `Business: ${record.business_name}`,
-          `Trade: ${record.trade}`,
-          `Phone: ${record.phone}`,
-          `Submitted: ${record.created_at}`,
-        ].join("\n"),
+          text: [
+  `Business: ${record.business_name}`,
+  `Trade: ${record.trade}`,
+  `Country: ${record.country}`,
+  `Email: ${record.email}`,
+  `Phone: ${record.phone}`,
+  `Submitted: ${record.created_at}`,
+].join("\n"),
       });
     } catch (err) {
       console.error("Resend notification failed:", err);
