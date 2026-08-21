@@ -132,6 +132,59 @@ export default function FinalCTA() {
                 />
               </div>
               <div>
+  <label htmlFor="country" className="mb-1.5 block text-xs font-medium text-dim">
+    Country
+  </label>
+  <select
+    id="country"
+    name="country"
+    required
+    defaultValue=""
+    onChange={(e) => setShowOtherCountry(e.target.value === "other")}
+    className="w-full rounded-lg border border-line bg-black/40 px-4 py-3 text-sm text-bone focus:border-bronze/50"
+  >
+    <option value="" disabled>
+      Select your country
+    </option>
+    <option value="United States">United States</option>
+    <option value="Canada">Canada</option>
+    <option value="United Kingdom">United Kingdom</option>
+    <option value="Australia">Australia</option>
+    <option value="India">India</option>
+    <option value="other">Other</option>
+  </select>
+</div>
+
+{showOtherCountry && (
+  <div>
+    <label htmlFor="countryOther" className="mb-1.5 block text-xs font-medium text-dim">
+      Which country?
+    </label>
+    <input
+      id="countryOther"
+      name="countryOther"
+      type="text"
+      required
+      placeholder="e.g. Germany"
+      className="w-full rounded-lg border border-line bg-black/40 px-4 py-3 text-sm text-bone placeholder:text-dim/60 focus:border-bronze/50"
+    />
+  </div>
+)}
+
+<div>
+  <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-dim">
+    Email
+  </label>
+  <input
+    id="email"
+    name="email"
+    type="email"
+    required
+    placeholder="you@business.com"
+    className="w-full rounded-lg border border-line bg-black/40 px-4 py-3 text-sm text-bone placeholder:text-dim/60 focus:border-bronze/50"
+  />
+</div>
+              <div>
                 <label htmlFor="trade" className="mb-1.5 block text-xs font-medium text-dim">
                   What do you do?
                 </label>
