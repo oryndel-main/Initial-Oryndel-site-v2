@@ -57,21 +57,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Select a valid trade." }, { status: 400 });
   }
   if (typeof country !== "string" || country.trim().length < 2 || country.length > 100) {
-  return NextResponse.json({ error: "Enter a valid country." }, { status: 400 });
-}
-if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
-  return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
-}
+    return NextResponse.json({ error: "Enter a valid country." }, { status: 400 });
+  }
+  if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
+    return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+  }
+  if (typeof phone !== "string" || !PHONE_RE.test(phone.trim())) {
+    return NextResponse.json({ error: "Enter a valid phone number." }, { status: 400 });
+  }
 
   const record = {
-  business_name: business.trim(),
-  trade,
-  country: country.trim(),
-  email: email.trim(),
-  phone: phone.trim(),
-  source: "site_final_cta",
-  created_at: new Date().toISOString(),
-};
+    business_name: business.trim(),
+    trade,
+    country: country.trim(),
+    email: email.trim(),
+    phone: phone.trim(),
+    source: "site_final_cta",
+    created_at: new Date().toISOString(),
+  };
 
   if (supabase) {
     const { error } = await supabase.from("demo_requests").insert(record);
@@ -89,7 +92,7 @@ if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
         from: "Oryndel Site <onboarding@resend.dev>",
         to: process.env.NOTIFY_EMAIL,
         subject: `New demo request — ${record.business_name}`,
-       text: [
+        text: [
           `Business: ${record.business_name}`,
           `Trade: ${record.trade}`,
           `Country: ${record.country}`,
