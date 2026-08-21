@@ -89,15 +89,14 @@ if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
         from: "Oryndel Site <onboarding@resend.dev>",
         to: process.env.NOTIFY_EMAIL,
         subject: `New demo request — ${record.business_name}`,
-        text: [
-          text: [
-  `Business: ${record.business_name}`,
-  `Trade: ${record.trade}`,
-  `Country: ${record.country}`,
-  `Email: ${record.email}`,
-  `Phone: ${record.phone}`,
-  `Submitted: ${record.created_at}`,
-].join("\n"),
+       text: [
+          `Business: ${record.business_name}`,
+          `Trade: ${record.trade}`,
+          `Country: ${record.country}`,
+          `Email: ${record.email}`,
+          `Phone: ${record.phone}`,
+          `Submitted: ${record.created_at}`,
+        ].join("\n"),
       });
     } catch (err) {
       console.error("Resend notification failed:", err);
